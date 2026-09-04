@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Paper Plane">
+  <rect width="512" height="512" fill="#0a0a0a"/>
+  <!-- Paper plane: nose down-right, matching in-game wireframe silhouette -->
+  <g
+    fill="none"
+    stroke="#e8e8e8"
+    stroke-width="14"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    transform="translate(256 268) rotate(28) scale(6.2)"
+  >
+    <!-- Local coords match Player.getLocalPolygon (nose +Y) -->
+    <path d="M 0 15.4 L 11 -9.8 L 0 -4.2 L -11 -9.8 Z"/>
+    <path d="M 0 15.4 L 0 -2"/>
+  </g>
+  <!-- Tiny depth tick marks for brand recall -->
+  <g stroke="#6a6a6a" stroke-width="6" stroke-linecap="square" opacity="0.7">
+    <path d="M 48 160 H 78"/>
+    <path d="M 48 220 H 70"/>
+    <path d="M 48 280 H 78"/>
+    <path d="M 434 160 H 464"/>
+    <path d="M 444 220 H 464"/>
+    <path d="M 434 280 H 464"/>
+  </g>
+</svg>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="application-name" content="Paper Plane" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Paper Plane" />
+    <title>PAPER PLANE</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="shell">
+        <header class="toolbar">
+          <span id="account-status" class="account-status">...</span>
+          <div class="toolbar-actions">
+            <button type="button" id="btn-ranking" class="tb-btn">RANK</button>
+            <button type="button" id="btn-login" class="tb-btn">LOGIN</button>
+          </div>
+        </header>
+
+        <div class="stage">
+          <canvas id="game" width="480" height="720" aria-label="Paper Plane game"></canvas>
+
+          <div id="modal-auth" class="modal" hidden>
+            <div class="modal-card">
+              <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+              <h2 id="auth-title">LOGIN</h2>
+              <p class="modal-sub">メール or Google（無料 Supabase）</p>
+              <form id="auth-form" class="auth-form">
+                <input
+                  id="auth-name"
+                  type="text"
+                  name="display_name"
+                  placeholder="DISPLAY NAME"
+                  maxlength="24"
+                  autocomplete="nickname"
+                  hidden
+                />
+                <input
+                  id="auth-email"
+                  type="email"
+                  name="email"
+                  placeholder="EMAIL"
+                  required
+                  autocomplete="email"
+                />
+                <input
+                  id="auth-password"
+                  type="password"
+                  name="password"
+                  placeholder="PASSWORD (6+)"
+                  required
+                  minlength="6"
+                  autocomplete="current-password"
+                />
+                <button type="submit" id="auth-submit" class="tb-btn primary">LOGIN</button>
+              </form>
+              <button type="button" id="btn-google" class="tb-btn google">GOOGLE</button>
+              <button type="button" id="auth-toggle" class="linkish">新規登録 → SIGN UP</button>
+              <p id="auth-msg" class="modal-msg"></p>
+            </div>
+          </div>
+
+          <div id="modal-ranking" class="modal" hidden>
+            <div class="modal-card wide">
+              <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+              <h2>GLOBAL RANK</h2>
+              <p class="modal-sub">TOP 10 · 深度順（同名OK）</p>
+              <ol id="rank-list" class="rank-list"></ol>
+              <p id="rank-msg" class="modal-msg"></p>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">← → / A D · TAP LEFT / RIGHT</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
