@@ -57,6 +57,13 @@ npm run dev
 4. **Authentication → URL Configuration**
    - Site URL: `http://127.0.0.1:5173`（本番はデプロイ先）
    - Redirect URLs に同じオリジンを追加
+   - **スマホ実機でローカル確認する場合**も追加が必要:
+     - `http://192.168.x.x:5173`（PCのLAN IP）
+     - `http://127.0.0.1:5173`
+     - `http://localhost:5173`
+   - Google Cloud の「承認済みの JavaScript 生成元」にも同じオリジンを追加
+
+スマホは **Safari / Chrome 本体**で開いてください（LINE・Instagram 内ブラウザだと Google 認証が失敗しやすいです）。
 
 ### 5. 動作確認
 

@@ -87,10 +87,9 @@ body.modal-open {
   color: var(--accent);
 }
 
-.tb-btn.primary {
-  width: 100%;
-  border-color: var(--accent);
-  color: var(--accent);
+.tb-btn.muted {
+  color: var(--dim);
+  border-color: #333;
 }
 
 .tb-btn.google {

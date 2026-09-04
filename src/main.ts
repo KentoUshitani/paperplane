@@ -15,6 +15,21 @@ game.onScoreCommit = (depth, stage) => {
   void account.syncScore(depth, stage);
 };
 
+const muteBtn = document.getElementById("btn-mute");
+const syncMuteLabel = () => {
+  if (!(muteBtn instanceof HTMLButtonElement)) return;
+  muteBtn.textContent = game.audio.isMuted ? "MUTE" : "BGM";
+  muteBtn.classList.toggle("muted", game.audio.isMuted);
+};
+syncMuteLabel();
+muteBtn?.addEventListener("click", () => {
+  void game.audio.unlock().then(() => {
+    game.audio.toggleMute();
+    if (!game.audio.isMuted) void game.audio.startMusic(0.35);
+    syncMuteLabel();
+  });
+});
+
 game.start();
 
 if (import.meta.hot) {

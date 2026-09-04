@@ -8,6 +8,7 @@ import {
   PLAYER,
   UPDRAFT,
 } from "./constants";
+import { AudioManager } from "./AudioManager";
 import { hitboxesOverlap } from "./Collision";
 import { CrashEffect } from "./CrashEffect";
 import { GameLoop } from "./GameLoop";
@@ -36,6 +37,7 @@ export class Game {
   private readonly player: Player;
   private readonly obstacles: ObstacleManager;
   private readonly crash: CrashEffect;
+  readonly audio: AudioManager;
 
   private state: GameState = "title";
   private depthPx = 0;
@@ -48,6 +50,7 @@ export class Game {
   private stageBanner = 0;
   private stageBannerText = "";
   private uiBlocked = false;
+  private prevSteer = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -59,6 +62,7 @@ export class Game {
     this.player = new Player(PLAYER.startX, PLAYER.startY);
     this.obstacles = new ObstacleManager();
     this.crash = new CrashEffect();
+    this.audio = new AudioManager();
     this.highScore = loadHighScore();
 
     this.loop = new GameLoop(
@@ -80,12 +84,20 @@ export class Game {
   start(): void {
     this.fitCanvas();
     window.addEventListener("resize", this.fitCanvas);
+    const unlock = () => {
+      void this.audio.unlock().then(() => this.audio.startMusic(0.22));
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+    window.addEventListener("pointerdown", unlock);
+    window.addEventListener("keydown", unlock);
     this.loop.start();
   }
 
   dispose(): void {
     this.loop.stop();
     this.input.dispose();
+    this.audio.dispose();
     window.removeEventListener("resize", this.fitCanvas);
   }
 
@@ -108,6 +120,9 @@ export class Game {
     this.crash.particles = [];
     this.input.consumePointerAsAction();
     this.input.consumeAction();
+    this.prevSteer = 0;
+    void this.audio.startMusic(0.28);
+    this.audio.playUi();
   }
 
   private gameOver(): void {
@@ -118,6 +133,8 @@ export class Game {
     this.highScore = loadHighScore();
     this.crash.trigger(this.player.x, this.player.y, this.player.tilt);
     this.flash = 0.35;
+    this.audio.playCrash();
+    void this.audio.startMusic(0.18);
     this.onScoreCommit?.(this.score, this.stage.id);
   }
 
@@ -127,6 +144,8 @@ export class Game {
     this.player.alive = true;
     saveHighScore(this.score);
     this.highScore = loadHighScore();
+    this.audio.playClear();
+    void this.audio.startMusic(0.2);
     this.onScoreCommit?.(this.score, this.stage.id);
   }
 
@@ -149,6 +168,8 @@ export class Game {
       this.obstacles.setStage(next);
       this.stageBanner = 2.0;
       this.stageBannerText = `STAGE ${next.id}  ${next.name}`;
+      this.audio.playStage();
+      this.audio.setIntensity(0.2 + (next.id / TOTAL_STAGES) * 0.25);
     }
   }
 
@@ -185,6 +206,10 @@ export class Game {
     this.input.consumePointerAsAction();
     this.input.consumeAction();
     const steer = this.input.steer;
+    if (steer !== 0 && steer !== this.prevSteer) {
+      this.audio.playBank(steer);
+    }
+    this.prevSteer = steer;
     this.player.update(dt, steer, CANVAS_WIDTH);
 
     const speed = this.scrollSpeed;

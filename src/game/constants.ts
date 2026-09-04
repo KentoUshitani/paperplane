@@ -11,8 +11,8 @@ export const COLORS = {
 } as const;
 
 /** Fallback / HUD reference speeds (actual speed comes from stage defs) */
-export const BASE_SCROLL_SPEED = 105;
-export const MAX_SCROLL_SPEED = 260;
+export const BASE_SCROLL_SPEED = 125;
+export const MAX_SCROLL_SPEED = 262;
 
 export const PLAYER = {
   startX: CANVAS_WIDTH / 2,
@@ -20,9 +20,10 @@ export const PLAYER = {
   length: 28,
   wingSpan: 22,
   maxTilt: Math.PI / 3,
-  tiltSpeed: 4.2,
-  untiltSpeed: 2.8,
-  lateralFactor: 280,
+  tiltSpeed: 4.6,
+  untiltSpeed: 3.0,
+  /** Slightly snappier lateral move */
+  lateralFactor: 320,
   wrapPadding: 16,
 } as const;
 

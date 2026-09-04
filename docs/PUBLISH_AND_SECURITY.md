@@ -29,10 +29,13 @@
 5. Supabase **Authentication → URL Configuration**
    - Site URL: `https://あなたの公開URL`
    - Redirect URLs に同じ URL を追加
+   - ローカル＋スマホ確認時は LAN IP も追加（例: `http://192.168.1.6:5173`）
 6. Google Cloud の OAuth クライアント
-   - 承認済みの JavaScript 生成元に公開 URL
+   - 承認済みの JavaScript 生成元に公開 URL（とローカル／LAN）
    - リダイレクト URI は従来どおり  
      `https://vhcjefgptzrpmtmtkvcf.supabase.co/auth/v1/callback`
+
+スマホは Safari / Chrome で開く（SNS 内ブラウザは非推奨）。
 
 ---
 

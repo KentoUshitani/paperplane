@@ -1,156 +1,142 @@
 import type { ObstacleKind } from "./types";
 
 export interface StageDef {
-  /** 1-based stage number */
   id: number;
-  /** Inclusive start depth (meters) */
   startM: number;
-  /** Exclusive end depth (meters); stage 10 end clears the run */
   endM: number;
   name: string;
-  /** Scroll speed for this stage (px/s) */
   scrollSpeed: number;
-  /** Vertical distance between obstacle spawns */
   spawnGap: number;
-  /** Minimum opening width for platforms / corridors */
   opening: number;
-  /** Relative spawn weights (0 = disabled) */
   weights: Record<ObstacleKind, number>;
-  /** Chance to attach a bonus updraft after a spawn */
   updraftPairChance: number;
-  /** Mover horizontal speed range */
   moverSpeed: [number, number];
 }
 
 /**
- * Difficulty curve (casual Paper Plane style):
- * 1–3  learn controls / read gaps
- * 4–6  introduce walls & movers one at a time
- * 7–9  denser mix, tighter openings
- * 10   peak challenge, then CLEAR
- *
- * ~50–70m per stage → full clear around 580m.
+ * Tuned so stage 10 is barely clearable for a focused player.
+ * Stage 1 is already a bit demanding (not a free tutorial).
  */
 export const STAGES: readonly StageDef[] = [
   {
     id: 1,
     startM: 0,
-    endM: 50,
+    endM: 45,
     name: "FIRST FOLD",
-    scrollSpeed: 105,
-    spawnGap: 300,
-    opening: 150,
-    weights: { platform: 1, wall: 0, mover: 0, updraft: 0.15 },
-    updraftPairChance: 0.05,
-    moverSpeed: [60, 80],
+    scrollSpeed: 125,
+    spawnGap: 250,
+    opening: 118,
+    weights: { platform: 1, wall: 0.2, mover: 0, updraft: 0.12 },
+    updraftPairChance: 0.06,
+    moverSpeed: [70, 90],
   },
   {
     id: 2,
-    startM: 50,
-    endM: 105,
+    startM: 45,
+    endM: 95,
     name: "WIDE SKY",
-    scrollSpeed: 118,
-    spawnGap: 280,
-    opening: 135,
-    weights: { platform: 1, wall: 0.25, mover: 0, updraft: 0.18 },
+    scrollSpeed: 138,
+    spawnGap: 235,
+    opening: 108,
+    weights: { platform: 1, wall: 0.4, mover: 0, updraft: 0.15 },
     updraftPairChance: 0.08,
-    moverSpeed: [70, 90],
-  },
-  {
-    id: 3,
-    startM: 105,
-    endM: 165,
-    name: "THERMAL",
-    scrollSpeed: 130,
-    spawnGap: 260,
-    opening: 125,
-    weights: { platform: 1, wall: 0.35, mover: 0, updraft: 0.35 },
-    updraftPairChance: 0.18,
-    moverSpeed: [70, 90],
-  },
-  {
-    id: 4,
-    startM: 165,
-    endM: 230,
-    name: "NARROW PASS",
-    scrollSpeed: 145,
-    spawnGap: 240,
-    opening: 112,
-    weights: { platform: 0.85, wall: 0.7, mover: 0, updraft: 0.22 },
-    updraftPairChance: 0.12,
     moverSpeed: [80, 100],
   },
   {
-    id: 5,
-    startM: 230,
-    endM: 300,
-    name: "CROSSWIND",
-    scrollSpeed: 158,
+    id: 3,
+    startM: 95,
+    endM: 150,
+    name: "THERMAL",
+    scrollSpeed: 150,
     spawnGap: 220,
-    opening: 102,
-    weights: { platform: 0.8, wall: 0.55, mover: 0.35, updraft: 0.2 },
-    updraftPairChance: 0.12,
-    moverSpeed: [90, 120],
+    opening: 100,
+    weights: { platform: 0.9, wall: 0.5, mover: 0.1, updraft: 0.28 },
+    updraftPairChance: 0.14,
+    moverSpeed: [90, 115],
+  },
+  {
+    id: 4,
+    startM: 150,
+    endM: 210,
+    name: "NARROW PASS",
+    scrollSpeed: 165,
+    spawnGap: 205,
+    opening: 92,
+    weights: { platform: 0.75, wall: 0.8, mover: 0.2, updraft: 0.18 },
+    updraftPairChance: 0.1,
+    moverSpeed: [100, 130],
+  },
+  {
+    id: 5,
+    startM: 210,
+    endM: 275,
+    name: "CROSSWIND",
+    scrollSpeed: 180,
+    spawnGap: 190,
+    opening: 86,
+    weights: { platform: 0.65, wall: 0.7, mover: 0.55, updraft: 0.16 },
+    updraftPairChance: 0.1,
+    moverSpeed: [110, 145],
   },
   {
     id: 6,
-    startM: 300,
-    endM: 375,
+    startM: 275,
+    endM: 345,
     name: "SWITCHBACK",
-    scrollSpeed: 172,
-    spawnGap: 205,
-    opening: 95,
-    weights: { platform: 0.7, wall: 0.65, mover: 0.5, updraft: 0.22 },
-    updraftPairChance: 0.14,
-    moverSpeed: [100, 140],
+    scrollSpeed: 195,
+    spawnGap: 178,
+    opening: 82,
+    weights: { platform: 0.55, wall: 0.75, mover: 0.7, updraft: 0.14 },
+    updraftPairChance: 0.1,
+    moverSpeed: [120, 160],
   },
   {
     id: 7,
-    startM: 375,
-    endM: 455,
+    startM: 345,
+    endM: 420,
     name: "GALE",
-    scrollSpeed: 190,
-    spawnGap: 190,
-    opening: 88,
-    weights: { platform: 0.6, wall: 0.7, mover: 0.65, updraft: 0.18 },
-    updraftPairChance: 0.1,
-    moverSpeed: [110, 155],
+    scrollSpeed: 212,
+    spawnGap: 168,
+    opening: 78,
+    weights: { platform: 0.45, wall: 0.85, mover: 0.85, updraft: 0.12 },
+    updraftPairChance: 0.08,
+    moverSpeed: [130, 175],
   },
   {
     id: 8,
-    startM: 455,
-    endM: 540,
+    startM: 420,
+    endM: 500,
     name: "NEEDLE",
-    scrollSpeed: 210,
-    spawnGap: 175,
-    opening: 80,
-    weights: { platform: 0.55, wall: 0.8, mover: 0.75, updraft: 0.15 },
-    updraftPairChance: 0.1,
-    moverSpeed: [120, 170],
+    scrollSpeed: 228,
+    spawnGap: 158,
+    opening: 74,
+    weights: { platform: 0.4, wall: 0.9, mover: 0.95, updraft: 0.1 },
+    updraftPairChance: 0.08,
+    moverSpeed: [140, 185],
   },
   {
     id: 9,
-    startM: 540,
-    endM: 630,
+    startM: 500,
+    endM: 585,
     name: "FREEFALL",
-    scrollSpeed: 235,
-    spawnGap: 160,
-    opening: 74,
-    weights: { platform: 0.45, wall: 0.85, mover: 0.9, updraft: 0.12 },
-    updraftPairChance: 0.08,
-    moverSpeed: [130, 185],
+    scrollSpeed: 245,
+    spawnGap: 150,
+    opening: 72,
+    weights: { platform: 0.35, wall: 0.95, mover: 1, updraft: 0.1 },
+    updraftPairChance: 0.07,
+    moverSpeed: [150, 195],
   },
   {
     id: 10,
-    startM: 630,
-    endM: 730,
+    startM: 585,
+    endM: 680,
     name: "PAPER EDGE",
-    scrollSpeed: 260,
-    spawnGap: 148,
-    opening: 68,
-    weights: { platform: 0.4, wall: 0.9, mover: 1, updraft: 0.1 },
-    updraftPairChance: 0.08,
-    moverSpeed: [140, 200],
+    scrollSpeed: 262,
+    spawnGap: 142,
+    opening: 70,
+    weights: { platform: 0.3, wall: 1, mover: 1.1, updraft: 0.12 },
+    updraftPairChance: 0.1,
+    moverSpeed: [155, 205],
   },
 ] as const;
 

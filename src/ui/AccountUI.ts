@@ -1,5 +1,6 @@
 import type { Session, User } from "@supabase/supabase-js";
 import {
+  completeAuthRedirect,
   fetchLeaderboard,
   getDisplayName,
   getSessionUser,
@@ -138,6 +139,13 @@ export class AccountUI {
       const loginBtn = this.root.querySelector("#btn-login");
       if (loginBtn) loginBtn.textContent = "SETUP";
       return;
+    }
+
+    try {
+      await completeAuthRedirect();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Google ログインに失敗";
+      this.openAuth(msg);
     }
 
     this.user = await getSessionUser();
@@ -280,6 +288,7 @@ export class AccountUI {
       this.authMsg.textContent = "Supabase 未設定";
       return;
     }
+    this.authMsg.textContent = "Google に移動します…";
     try {
       await signInWithGoogle();
     } catch (err) {

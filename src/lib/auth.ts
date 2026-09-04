@@ -1,5 +1,9 @@
 import type { User } from "@supabase/supabase-js";
-import { isSupabaseConfigured, supabase } from "./supabase";
+import {
+  getAuthRedirectUrl,
+  isSupabaseConfigured,
+  supabase,
+} from "./supabase";
 
 /** One leaderboard row = one play record (same name may appear many times). */
 export type ScoreRow = {
@@ -40,6 +44,41 @@ function mapLegacyScore(row: {
   };
 }
 
+/** Finish PKCE redirect on mobile (code in query string). */
+export async function completeAuthRedirect(): Promise<boolean> {
+  if (!supabase) return false;
+
+  const url = new URL(window.location.href);
+  const code = url.searchParams.get("code");
+  const errorDesc =
+    url.searchParams.get("error_description") || url.searchParams.get("error");
+
+  if (errorDesc) {
+    cleanAuthParamsFromUrl();
+    throw new Error(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
+  }
+
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    cleanAuthParamsFromUrl();
+    if (error) throw error;
+    return true;
+  }
+
+  if (url.hash.includes("access_token")) {
+    const { error } = await supabase.auth.getSession();
+    cleanAuthParamsFromUrl();
+    if (error) throw error;
+    return true;
+  }
+
+  return false;
+}
+
+function cleanAuthParamsFromUrl(): void {
+  window.history.replaceState({}, document.title, getAuthRedirectUrl());
+}
+
 /** Top N by depth (record), not unique by name. */
 export async function fetchLeaderboard(limit = 10): Promise<ScoreRow[]> {
   if (!supabase) return [];
@@ -55,7 +94,6 @@ export async function fetchLeaderboard(limit = 10): Promise<ScoreRow[]> {
     return (primary.data ?? []) as ScoreRow[];
   }
 
-  // Fallback: older `scores` table (one row per user)
   const legacy = await supabase
     .from("scores")
     .select("user_id, display_name, best_depth, best_stage, updated_at")
@@ -81,7 +119,6 @@ export async function submitScoreRecord(
 
   const name = (displayName.trim() || "PILOT").slice(0, 24);
 
-  // Ensure session is loaded so auth.uid() works in RPC
   const { data: sessionData, error: sessionError } =
     await supabase.auth.getSession();
   if (sessionError) throw sessionError;
@@ -100,7 +137,6 @@ export async function submitScoreRecord(
     return row;
   }
 
-  // Fallback when RPC is missing / misconfigured
   const inserted = await supabase
     .from("score_records")
     .insert({
@@ -114,7 +150,6 @@ export async function submitScoreRecord(
 
   if (!inserted.error) return inserted.data as ScoreRow;
 
-  // Last resort: legacy best-score upsert table
   const legacy = await supabase.rpc("submit_best_score", {
     p_depth: d,
     p_stage: s,
@@ -135,7 +170,10 @@ export async function submitScoreRecord(
 
 export async function signInWithEmail(email: string, password: string) {
   if (!supabase) throw new Error("Supabase is not configured");
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
   if (error) throw error;
   return data;
 }
@@ -146,27 +184,38 @@ export async function signUpWithEmail(
   displayName: string,
 ) {
   if (!supabase) throw new Error("Supabase is not configured");
+  const redirectTo = getAuthRedirectUrl();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { display_name: displayName.slice(0, 24) },
-      emailRedirectTo: window.location.origin,
+      emailRedirectTo: redirectTo,
     },
   });
   if (error) throw error;
   return data;
 }
 
+/**
+ * Google OAuth — explicit full-page redirect (works on mobile Safari/Chrome).
+ */
 export async function signInWithGoogle() {
   if (!supabase) throw new Error("Supabase is not configured");
+  const redirectTo = getAuthRedirectUrl();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: window.location.origin,
+      redirectTo,
+      skipBrowserRedirect: true,
+      queryParams: {
+        prompt: "select_account",
+      },
     },
   });
   if (error) throw error;
+  if (!data.url) throw new Error("Google 認証 URL を取得できませんでした");
+  window.location.assign(data.url);
   return data;
 }
 
@@ -183,4 +232,4 @@ export async function getSessionUser(): Promise<User | null> {
   return data.session?.user ?? null;
 }
 
-export { isSupabaseConfigured, supabase };
+export { getAuthRedirectUrl, isSupabaseConfigured, supabase };

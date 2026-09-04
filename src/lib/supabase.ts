@@ -10,6 +10,25 @@ export const isSupabaseConfigured = Boolean(
     !anonKey.includes("YOUR_SUPABASE_ANON_KEY"),
 );
 
+/**
+ * PKCE + localStorage — required for reliable Google login on mobile Safari.
+ */
 export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(url!, anonKey!)
+  ? createClient(url!, anonKey!, {
+      auth: {
+        flowType: "pkce",
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+        storage: typeof window !== "undefined" ? window.localStorage : undefined,
+        storageKey: "paperplane-auth",
+      },
+    })
   : null;
+
+/** Clean app URL for OAuth return (no hash / oauth query junk). */
+export function getAuthRedirectUrl(): string {
+  const { origin, pathname } = window.location;
+  const path = pathname.endsWith("/") ? pathname : pathname || "/";
+  return `${origin}${path === "" ? "/" : path}`;
+}
