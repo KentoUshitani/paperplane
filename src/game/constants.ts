@@ -11,8 +11,8 @@ export const COLORS = {
 } as const;
 
 /** Fallback / HUD reference speeds (actual speed comes from stage defs) */
-export const BASE_SCROLL_SPEED = 125;
-export const MAX_SCROLL_SPEED = 262;
+export const BASE_SCROLL_SPEED = 105;
+export const MAX_SCROLL_SPEED = 260;
 
 export const PLAYER = {
   startX: CANVAS_WIDTH / 2,
